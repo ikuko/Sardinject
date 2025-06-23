@@ -12,7 +12,7 @@ namespace HoshinoLabs.Sardinject.Udon {
             var typeCheckSerializersField = typeof(UdonSharp.Serialization.Serializer).GetField("_typeCheckSerializers", BindingFlags.Static | BindingFlags.NonPublic);
             var typeCheckSerializers = (List<UdonSharp.Serialization.Serializer>)typeCheckSerializersField.GetValue(null);
             typeCheckSerializers.RemoveAll(x => x.GetType() == typeof(DefaultSerializer));
-            var idx = typeCheckSerializers.FindIndex(x => x.GetType().FullName.StartsWith("UdonSharp.Serialization.DefaultSerializer"));
+            var idx = typeCheckSerializers.FindIndex(x => x.GetType().FullName.StartsWith("UdonSharp.Serialization.UnityObjectSerializer"));
             typeCheckSerializers.Insert(Math.Max(idx, 0), new DefaultSerializer());
         }
 
