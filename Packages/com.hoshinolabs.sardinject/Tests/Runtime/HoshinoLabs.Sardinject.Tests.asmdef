@@ -12,12 +12,25 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "VRCSDKBase.dll",
+        "VRCSDK3.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.vrchat.worlds",
+            "expression": "3.7.4-1",
+            "define": "VRC_SDK_WORLDS3_7_4_OR_NEWER"
+        },
+        {
+            "name": "com.vrchat.worlds",
+            "expression": "3.8.2-1",
+            "define": "VRC_SDK_WORLDS3_8_2_OR_NEWER"
+        }
+    ],
     "noEngineReferences": false
 }

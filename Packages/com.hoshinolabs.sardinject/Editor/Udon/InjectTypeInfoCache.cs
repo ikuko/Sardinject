@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+#if VRC_SDK_WORLDS3_8_1_OR_NEWER
+using VRC.SDK3.UdonNetworkCalling;
+#endif
 
 namespace HoshinoLabs.Sardinject.Udon {
     internal static class InjectTypeInfoCache {
@@ -58,6 +61,15 @@ namespace HoshinoLabs.Sardinject.Udon {
             return methods.ToArray();
         }
 
+        static string BuildMethodSymbol(MethodInfo[] methods, MethodInfo method) {
+            var exportMethods = methods
+                .Where(x => x.Name == method.Name)
+                .Where(x => 0 < x.GetParameters().Length)
+                .ToArray();
+            var methodId = Array.IndexOf(exportMethods, method);
+            return methodId < 0 ? method.Name : $"__{methodId}_{method.Name}";
+        }
+
         static InjectMethodInfo BuildMethod(Sardinject.InjectTypeInfo typeInfo, Sardinject.InjectMethodInfo methodInfo) {
             var publicMethods = typeInfo.Type.GetMethods(BindingFlags.Instance | BindingFlags.Public);
             var exportMethods = publicMethods
@@ -65,7 +77,12 @@ namespace HoshinoLabs.Sardinject.Udon {
                 .Where(x => 0 < x.GetParameters().Length)
                 .ToArray();
             var methodId = Array.IndexOf(exportMethods, methodInfo.MethodInfo);
-            var methodSymbol = methodId < 0 ? methodInfo.MethodInfo.Name : $"__{methodId}_{methodInfo.MethodInfo.Name}";
+#if VRC_SDK_WORLDS3_8_1_OR_NEWER
+            var networked = methodInfo.MethodInfo.GetCustomAttribute<NetworkCallableAttribute>() != null;
+            var methodSymbol = networked ? methodInfo.MethodInfo.Name : BuildMethodSymbol(publicMethods, methodInfo.MethodInfo);
+#else
+            var methodSymbol = BuildMethodSymbol(publicMethods, methodInfo.MethodInfo);
+#endif
             var parameters = methodInfo.Parameters
                 .Select(x => BuildParameter(typeInfo, x))
                 .ToArray();

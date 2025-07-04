@@ -9,6 +9,9 @@ using UnityEngine;
 using UnityEngine.TestTools;
 #if !VRC_CLIENT && UNITY_EDITOR && VRC_SDK_VRCSDK3
 using VRC.Core;
+#if VRC_SDK_WORLDS3_7_4_OR_NEWER && !VRC_SDK_WORLDS3_8_2_OR_NEWER
+using VRC.SDKBase;
+#endif
 #endif
 
 namespace HoshinoLabs.Sardinject.Tests {
@@ -56,6 +59,15 @@ namespace HoshinoLabs.Sardinject.Tests {
                     InitialTargetAccessFilters.Add(type, allowedMethodFilter);
                 }
             }
+
+#if VRC_SDK_WORLDS3_7_4_OR_NEWER && !VRC_SDK_WORLDS3_8_2_OR_NEWER
+            if (VRC_SceneDescriptor.Instance == null) {
+                var gameObjectName = typeof(VRC_SceneDescriptor).Name;
+                var go = new GameObject(typeof(VRC_SceneDescriptor).Name);
+                var component = go.AddComponent<VRC.SDK3.Components.VRCSceneDescriptor>();
+                component.spawns = new[] { go.transform };
+            }
+#endif
 #endif
         }
 
