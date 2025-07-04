@@ -61,11 +61,9 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          customParameters: -testFilter "HoshinoLabs.*" -logFile
-          testMode: editmode
+          customParameters: -testFilter "HoshinoLabs.*"
+          # testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          # coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+HoshinoLabs.*"
-          # coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;pathFilters:+**/Packages/${{ vars.PACKAGE_NAME }}/**"
           coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
 
   # Build and release the Package
