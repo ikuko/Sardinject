@@ -65,7 +65,7 @@ jobs:
           # projectPath: path/to/your/project
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+HoshinoLabs.Sardinject.*"
+          coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-<all>,+HoshinoLabs.Sardinject.*"
 
       # Get the Package version based on the package.json file
       - name: Get Version
