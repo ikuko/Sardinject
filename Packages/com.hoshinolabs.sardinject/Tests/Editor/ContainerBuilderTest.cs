@@ -87,12 +87,40 @@ namespace HoshinoLabs.Sardinject.Tests {
             Assert.DoesNotThrow(() => builder.RegisterInstance(new Simple()));
         }
 
+        // インスタンスで登録,ISimpleを継承するSimple,スローするべきではない
+        [Test]
+        public void RegisterInstance_SimpleThatInheritsISimple_ShouldNotThrow() {
+            var builder = new ContainerBuilder();
+            Assert.DoesNotThrow(() => builder.RegisterInstance(new Simple()).As<ISimple>());
+        }
+
+        // インスタンスで登録,IDisposableを継承するSimple,スローするべき
+        [Test]
+        public void RegisterInstance_SimpleThatInheritsIDisposable_ShouldThrow() {
+            var builder = new ContainerBuilder();
+            Assert.Throws<SardinjectException>(() => builder.RegisterInstance(new Simple()).As<IDisposable>());
+        }
+
         // ファクトリで登録,スローするべきではない
         [Test]
         public void RegisterFactory_ShouldNotThrow() {
             var builder = new ContainerBuilder();
             Assert.DoesNotThrow(() => builder.RegisterFactory(() => new Simple(), Lifetime.Transient));
             Assert.DoesNotThrow(() => builder.RegisterFactory((_) => new Simple(), Lifetime.Transient));
+        }
+
+        // ファクトリで登録,ISimpleを継承するSimple,スローするべきではない
+        [Test]
+        public void RegisterFactory_SimpleThatInheritsISimple_ShouldNotThrow() {
+            var builder = new ContainerBuilder();
+            Assert.DoesNotThrow(() => builder.RegisterFactory(() => new Simple(), Lifetime.Transient).As<ISimple>());
+        }
+
+        // ファクトリで登録,IDisposableを継承するSimple,スローするべき
+        [Test]
+        public void RegisterFactory_SimpleThatInheritsIDisposable_ShouldThrow() {
+            var builder = new ContainerBuilder();
+            Assert.Throws<SardinjectException>(() => builder.RegisterFactory(() => new Simple(), Lifetime.Transient).As<IDisposable>());
         }
 
         // ビルド,スローするべきではない
