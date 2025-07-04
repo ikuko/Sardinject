@@ -62,10 +62,12 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          # projectPath: path/to/your/project
+          customParameters: -testFilter "HoshinoLabs.*"
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+HoshinoLabs.*"
+          # coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+HoshinoLabs.*"
+          # coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;pathFilters:+**/Packages/${{ vars.PACKAGE_NAME }}/**"
+          coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
 
       # Get the Package version based on the package.json file
       - name: Get Version
