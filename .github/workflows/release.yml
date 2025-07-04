@@ -25,13 +25,12 @@ jobs:
           echo "configPackage=false" >> $GITHUB_OUTPUT;
         fi
 
-  # Build and release the Package
-  # If the repository is not configured properly, this job will be skipped
-  build:
+  # Run the Unity Tests
+  test:
     needs: config
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      checks: write
     env:
       packagePath: Packages/${{ vars.PACKAGE_NAME }}
     if: needs.config.outputs.config_package == 'true'
@@ -62,12 +61,28 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          customParameters: -testFilter "HoshinoLabs.*"
+          customParameters: -testFilter "HoshinoLabs.*" -logFile
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           # coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+HoshinoLabs.*"
           # coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;pathFilters:+**/Packages/${{ vars.PACKAGE_NAME }}/**"
           coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
+
+  # Build and release the Package
+  # If the repository is not configured properly, this job will be skipped
+  build:
+    needs: config
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      packagePath: Packages/${{ vars.PACKAGE_NAME }}
+    if: needs.config.outputs.config_package == 'true'
+    steps:
+
+      # Checkout Local Repository
+      - name: Checkout
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac
 
       # Get the Package version based on the package.json file
       - name: Get Version
