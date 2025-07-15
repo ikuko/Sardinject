@@ -6,7 +6,7 @@ namespace HoshinoLabs.Sardinject.Udon {
     internal static class MethodInfoExtensions {
         public static InjectParameterInfo[] GetInjectParameters(this MethodInfo self, Dictionary<object, int> lookupId) {
             return self.GetParameters()
-                .Select(x => new InjectParameterInfo(x, x.GetSymbol(lookupId), x.GetCustomAttribute<InjectAttribute>()?.Id))
+                .Select(x => new InjectParameterInfo(x, x.GetSymbol(lookupId), ((IInject)x.GetCustomAttributes().Where(x => x.GetType().GetInterfaces().Contains(typeof(IInject))).FirstOrDefault())?.Id))
                 .ToArray();
         }
 

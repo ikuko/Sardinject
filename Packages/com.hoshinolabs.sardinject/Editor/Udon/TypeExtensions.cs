@@ -7,19 +7,19 @@ namespace HoshinoLabs.Sardinject.Udon {
     internal static class TypeExtensions {
         public static InjectFieldInfo[] GetInjectFields(this Type self) {
             return self.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(x => x.IsDefined(typeof(InjectAttribute), false))
-                .Select(x => new InjectFieldInfo(x, x.GetCustomAttribute<InjectAttribute>().Id))
+                .Where(x => x.IsDefined(typeof(IInject), false))
+                .Select(x => new InjectFieldInfo(x, ((IInject)x.GetCustomAttributes().Where(x => x.GetType().GetInterfaces().Contains(typeof(IInject))).FirstOrDefault()).Id))
                 .Concat(self.BaseType?.GetInjectFields() ?? Array.Empty<InjectFieldInfo>())
                 .ToArray();
         }
 
         public static InjectPropertyInfo[] GetInjectProperties(this Type self, Dictionary<object, int> lookupId) {
             return self.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(x => x.IsDefined(typeof(InjectAttribute), false) && x.CanWrite)
+                .Where(x => x.IsDefined(typeof(IInject), false) && x.CanWrite)
                 .Select(x => {
                     var getter = x.CanRead ? new InjectMethodInfo(x.GetMethod, x.GetMethod.GetSymbol(lookupId), x.GetMethod.GetInjectParameters(lookupId)) : null;
                     var setter = x.CanWrite ? new InjectMethodInfo(x.SetMethod, x.SetMethod.GetSymbol(lookupId), x.SetMethod.GetInjectParameters(lookupId)) : null;
-                    return new InjectPropertyInfo(x, getter, setter, x.GetCustomAttribute<InjectAttribute>().Id);
+                    return new InjectPropertyInfo(x, getter, setter, ((IInject)x.GetCustomAttributes().Where(x => x.GetType().GetInterfaces().Contains(typeof(IInject))).FirstOrDefault()).Id);
                 })
                 .Concat(self.BaseType?.GetInjectProperties(lookupId) ?? Array.Empty<InjectPropertyInfo>())
                 .ToArray();
@@ -44,7 +44,7 @@ namespace HoshinoLabs.Sardinject.Udon {
 
         public static InjectMethodInfo[] GetInjectMethods(this Type self, Dictionary<object, int> lookupId) {
             return self.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(x => x.IsDefined(typeof(InjectAttribute), false))
+                .Where(x => x.IsDefined(typeof(IInject), false))
                 .Select(x => new InjectMethodInfo(x, x.GetSymbol(lookupId), x.GetInjectParameters(lookupId)))
                 .Concat(self.BaseType?.GetInjectMethods(lookupId) ?? Array.Empty<InjectMethodInfo>())
                 .ToArray();
