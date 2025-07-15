@@ -1,16 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace HoshinoLabs.Sardinject.Udon {
-    internal static class MethodInfoExtensions {
-        public static InjectParameterInfo[] GetInjectParameters(this MethodInfo self, Dictionary<object, int> lookupId) {
+    public static class MethodInfoExtensions {
+        internal static InjectMethodInfo ToInjectMethod(this MethodInfo self, Dictionary<object, int> lookupId) {
+            return new InjectMethodInfo(self, self.GetSymbol(lookupId), self.GetInjectParameters(lookupId));
+        }
+
+        internal static InjectParameterInfo[] GetInjectParameters(this MethodInfo self, Dictionary<object, int> lookupId) {
             return self.GetParameters()
-                .Select(x => new InjectParameterInfo(x, x.GetSymbol(lookupId), ((IInject)x.GetCustomAttributes().Where(x => x.GetType().GetInterfaces().Contains(typeof(IInject))).FirstOrDefault())?.Id))
+                .Select(x => x.ToInjectParameter(lookupId))
                 .ToArray();
         }
 
-        public static string GetSymbol(this MethodInfo self, Dictionary<object, int> lookupId) {
+        internal static string GetSymbol(this MethodInfo self, Dictionary<object, int> lookupId) {
 #if VRC_SDK_WORLDS3_8_1_OR_NEWER
             if (self.IsDefined(typeof(VRC.SDK3.UdonNetworkCalling.NetworkCallableAttribute), false)) {
                 return self.Name;
@@ -20,6 +25,11 @@ namespace HoshinoLabs.Sardinject.Udon {
                 return $"__{id}_{self.Name}";
             }
             return self.Name;
+        }
+
+        public static string GetUdonExportSymbol(this MethodInfo self, Type declaringType) {
+            var lookupId = declaringType.GetLookupId();
+            return self.GetSymbol(lookupId);
         }
     }
 }

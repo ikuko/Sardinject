@@ -12,14 +12,13 @@ namespace HoshinoLabs.Sardinject {
             if (1 < constructorInfos.Count(x => x.IsDefined(typeof(IInject), false))) {
                 throw new SardinjectException("Multiple constructors with the Inject attribute were found.");
             }
-            var constructorInfo = constructorInfos.First();
-            return new InjectConstructorInfo(constructorInfo, constructorInfo.GetInjectParameters());
+            return constructorInfos.First().ToInjectConstructor();
         }
 
         public static InjectFieldInfo[] GetInjectFields(this Type self) {
             return self.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(x => x.IsDefined(typeof(IInject), false))
-                .Select(x => new InjectFieldInfo(x, ((IInject)x.GetCustomAttributes().Where(x => x.GetType().GetInterfaces().Contains(typeof(IInject))).FirstOrDefault()).Id))
+                .Select(x => x.ToInjectField())
                 .Concat(self.BaseType?.GetInjectFields() ?? Array.Empty<InjectFieldInfo>())
                 .ToArray();
         }
@@ -27,7 +26,7 @@ namespace HoshinoLabs.Sardinject {
         public static InjectPropertyInfo[] GetInjectProperties(this Type self) {
             return self.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(x => x.IsDefined(typeof(IInject), false) && x.CanWrite)
-                .Select(x => new InjectPropertyInfo(x, ((IInject)x.GetCustomAttributes().Where(x => x.GetType().GetInterfaces().Contains(typeof(IInject))).FirstOrDefault()).Id))
+                .Select(x => x.ToInjectProperty())
                 .Concat(self.BaseType?.GetInjectProperties() ?? Array.Empty<InjectPropertyInfo>())
                 .ToArray();
         }
@@ -35,7 +34,7 @@ namespace HoshinoLabs.Sardinject {
         public static InjectMethodInfo[] GetInjectMethods(this Type self) {
             return self.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(x => x.IsDefined(typeof(IInject), false))
-                .Select(x => new InjectMethodInfo(x, x.GetInjectParameters()))
+                .Select(x => x.ToInjectMethod())
                 .Concat(self.BaseType?.GetInjectMethods() ?? Array.Empty<InjectMethodInfo>())
                 .ToArray();
         }
