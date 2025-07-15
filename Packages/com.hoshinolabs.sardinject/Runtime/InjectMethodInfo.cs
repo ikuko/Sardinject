@@ -2,12 +2,19 @@ using System.Reflection;
 
 namespace HoshinoLabs.Sardinject {
     public sealed class InjectMethodInfo {
-        public readonly MethodInfo MethodInfo;
-        public readonly InjectParameterInfo[] Parameters;
+        readonly MethodInfo methodInfo;
+        readonly InjectParameterInfo[] parameters;
+
+        public string Name => methodInfo.Name;
+        public InjectParameterInfo[] Parameters => parameters;
 
         public InjectMethodInfo(MethodInfo methodInfo, InjectParameterInfo[] parameters) {
-            MethodInfo = methodInfo;
-            Parameters = parameters;
+            this.methodInfo = methodInfo;
+            this.parameters = parameters;
+        }
+
+        public object Invoke(object obj, object[] parameters) {
+            return methodInfo.Invoke(obj, parameters);
         }
     }
 }

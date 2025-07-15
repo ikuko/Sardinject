@@ -7,7 +7,7 @@ namespace HoshinoLabs.Sardinject {
 
         public static Injector GetOrBuild(Type type) {
             if (!cache.TryGetValue(type, out var injector)) {
-                var info = InjectTypeInfoCache.GetOrBuild(type);
+                var info = TypeLayoutCache.GetOrBuild(type);
                 injector = new Injector(info);
                 cache.Add(type, injector);
             }

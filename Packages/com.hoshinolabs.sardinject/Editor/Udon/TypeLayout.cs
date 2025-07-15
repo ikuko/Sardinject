@@ -1,17 +1,17 @@
 using System;
 
 namespace HoshinoLabs.Sardinject.Udon {
-    internal sealed class InjectTypeInfo {
+    public sealed class TypeLayout {
         public readonly Type Type;
         public readonly InjectFieldInfo[] Fields;
         public readonly InjectPropertyInfo[] Properties;
         public readonly InjectMethodInfo[] Methods;
 
-        public InjectTypeInfo(Type type, InjectFieldInfo[] fields, InjectPropertyInfo[] properties, InjectMethodInfo[] methods) {
+        public TypeLayout(Type type, InjectFieldInfo[] fieldInfos, InjectPropertyInfo[] propertyInfos, InjectMethodInfo[] methodInfos) {
             Type = type;
-            Fields = fields;
-            Properties = properties;
-            Methods = methods;
+            Fields = fieldInfos;
+            Properties = propertyInfos;
+            Methods = methodInfos;
         }
     }
 }

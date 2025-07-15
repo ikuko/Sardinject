@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 
 namespace HoshinoLabs.Sardinject {
     internal struct DependencyInfo {
@@ -18,43 +17,51 @@ namespace HoshinoLabs.Sardinject {
             Member = null;
         }
 
-        public DependencyInfo(Binding dest, Type destType, Binding src, Type srcType, FieldInfo field) {
+        public DependencyInfo(Binding dest, Type destType, Binding src, Type srcType, InjectConstructorInfo constructorInfo) {
             Dest = dest;
             DestType = destType;
             Src = src;
             SrcType = srcType;
-            Member = field;
+            Member = constructorInfo;
         }
 
-        public DependencyInfo(Binding dest, Type destType, Binding src, Type srcType, PropertyInfo property) {
+        public DependencyInfo(Binding dest, Type destType, Binding src, Type srcType, InjectFieldInfo fieldInfo) {
             Dest = dest;
             DestType = destType;
             Src = src;
             SrcType = srcType;
-            Member = property;
+            Member = fieldInfo;
         }
 
-        public DependencyInfo(Binding dest, Type destType, Binding src, Type srcType, MethodBase method) {
+        public DependencyInfo(Binding dest, Type destType, Binding src, Type srcType, InjectPropertyInfo propertyInfo) {
             Dest = dest;
             DestType = destType;
             Src = src;
             SrcType = srcType;
-            Member = method;
+            Member = propertyInfo;
+        }
+
+        public DependencyInfo(Binding dest, Type destType, Binding src, Type srcType, InjectMethodInfo methodInfo) {
+            Dest = dest;
+            DestType = destType;
+            Src = src;
+            SrcType = srcType;
+            Member = methodInfo;
         }
 
         public override string ToString() {
             switch (Member) {
-                case ConstructorInfo constructor: {
-                        return $"{SrcType}..ctor({string.Join(", ", constructor.GetParameters().Select(x => x.Name))})";
+                case InjectConstructorInfo constructorInfo: {
+                        return $"{SrcType}..ctor({string.Join(", ", constructorInfo.Parameters.Select(x => x.Name))})";
                     }
-                case MethodInfo method: {
-                        return $"{SrcType.FullName}.{method.Name}({string.Join(", ", method.GetParameters().Select(x => x.Name))})";
+                case InjectMethodInfo methodInfo: {
+                        return $"{SrcType.FullName}.{methodInfo.Name}({string.Join(", ", methodInfo.Parameters.Select(x => x.Name))})";
                     }
-                case FieldInfo field: {
-                        return $"{SrcType.FullName}.{field.Name}";
+                case InjectFieldInfo fieldInfo: {
+                        return $"{SrcType.FullName}.{fieldInfo.Name}";
                     }
-                case PropertyInfo property: {
-                        return $"{SrcType.FullName}.{property.Name}";
+                case InjectPropertyInfo propertyInfo: {
+                        return $"{SrcType.FullName}.{propertyInfo.Name}";
                     }
             }
             return string.Empty;

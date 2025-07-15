@@ -1,15 +1,20 @@
 using System.Reflection;
 
 namespace HoshinoLabs.Sardinject.Udon {
-    internal sealed class InjectMethodInfo {
-        public readonly MethodInfo MethodInfo;
-        public readonly string Symbol;
-        public readonly InjectParameterInfo[] Parameters;
+    public sealed class InjectMethodInfo {
+        readonly MethodInfo methodInfo;
+        readonly string symbol;
+        readonly InjectParameterInfo[] parameters;
+
+        public string Name => methodInfo.Name;
+        public string Symbol => symbol;
+        public InjectParameterInfo[] Parameters => parameters;
+
 
         public InjectMethodInfo(MethodInfo methodInfo, string symbol, InjectParameterInfo[] parameters) {
-            MethodInfo = methodInfo;
-            Symbol = symbol;
-            Parameters = parameters;
+            this.methodInfo = methodInfo;
+            this.symbol = symbol;
+            this.parameters = parameters;
         }
     }
 }

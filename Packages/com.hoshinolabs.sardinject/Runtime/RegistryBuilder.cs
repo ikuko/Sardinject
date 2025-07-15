@@ -50,7 +50,7 @@ namespace HoshinoLabs.Sardinject {
         void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies) {
             ValidateCircularDependencies(current, dependencies);
             dependencies.Push(current);
-            var info = InjectTypeInfoCache.GetOrBuild(current.DestType);
+            var info = TypeLayoutCache.GetOrBuild(current.DestType);
             ValidateCircularDependencies(current, registry, dependencies, info);
             dependencies.Pop();
         }
@@ -70,46 +70,46 @@ namespace HoshinoLabs.Sardinject {
             }
         }
 
-        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectTypeInfo info) {
+        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, TypeLayout info) {
             ValidateCircularDependencies(current, registry, dependencies, info.Constructor);
-            foreach (var field in info.Fields) {
-                ValidateCircularDependencies(current, registry, dependencies, field);
+            foreach (var fieldInfo in info.Fields) {
+                ValidateCircularDependencies(current, registry, dependencies, fieldInfo);
             }
-            foreach (var property in info.Properties) {
-                ValidateCircularDependencies(current, registry, dependencies, property);
+            foreach (var propertyInfo in info.Properties) {
+                ValidateCircularDependencies(current, registry, dependencies, propertyInfo);
             }
-            foreach (var method in info.Methods) {
-                ValidateCircularDependencies(current, registry, dependencies, method);
+            foreach (var methodInfo in info.Methods) {
+                ValidateCircularDependencies(current, registry, dependencies, methodInfo);
             }
         }
 
-        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectConstructorInfo constructor) {
-            foreach (var parameter in constructor.Parameters) {
-                foreach (var binding in registry.GetBindings(parameter.ParameterInfo.ParameterType)) {
-                    var dependency = new DependencyInfo(binding, parameter.ParameterInfo.ParameterType, current.Dest, current.DestType, constructor.ConstructorInfo);
+        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectConstructorInfo constructorInfo) {
+            foreach (var parameterInfo in constructorInfo.Parameters) {
+                foreach (var binding in registry.GetBindings(parameterInfo.ParameterType)) {
+                    var dependency = new DependencyInfo(binding, parameterInfo.ParameterType, current.Dest, current.DestType, constructorInfo);
                     ValidateCircularDependencies(dependency, registry, dependencies);
                 }
             }
         }
 
-        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectFieldInfo field) {
-            foreach (var binding in registry.GetBindings(field.FieldInfo.FieldType)) {
-                var dependency = new DependencyInfo(binding, field.FieldInfo.FieldType, current.Dest, current.DestType, field.FieldInfo);
+        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectFieldInfo fieldInfo) {
+            foreach (var binding in registry.GetBindings(fieldInfo.FieldType)) {
+                var dependency = new DependencyInfo(binding, fieldInfo.FieldType, current.Dest, current.DestType, fieldInfo);
                 ValidateCircularDependencies(dependency, registry, dependencies);
             }
         }
 
-        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectPropertyInfo property) {
-            foreach (var binding in registry.GetBindings(property.PropertyInfo.PropertyType)) {
-                var dependency = new DependencyInfo(binding, property.PropertyInfo.PropertyType, current.Dest, current.DestType, property.PropertyInfo);
+        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectPropertyInfo propertyInfo) {
+            foreach (var binding in registry.GetBindings(propertyInfo.PropertyType)) {
+                var dependency = new DependencyInfo(binding, propertyInfo.PropertyType, current.Dest, current.DestType, propertyInfo);
                 ValidateCircularDependencies(dependency, registry, dependencies);
             }
         }
 
-        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectMethodInfo method) {
-            foreach (var parameter in method.Parameters) {
-                foreach (var binding in registry.GetBindings(parameter.ParameterInfo.ParameterType)) {
-                    var dependency = new DependencyInfo(binding, parameter.ParameterInfo.ParameterType, current.Dest, current.DestType, method.MethodInfo);
+        void ValidateCircularDependencies(DependencyInfo current, Registry registry, Stack<DependencyInfo> dependencies, InjectMethodInfo methodInfo) {
+            foreach (var parameterInfo in methodInfo.Parameters) {
+                foreach (var binding in registry.GetBindings(parameterInfo.ParameterType)) {
+                    var dependency = new DependencyInfo(binding, parameterInfo.ParameterType, current.Dest, current.DestType, methodInfo);
                     ValidateCircularDependencies(dependency, registry, dependencies);
                 }
             }

@@ -1,13 +1,22 @@
+using System;
 using System.Reflection;
 
 namespace HoshinoLabs.Sardinject {
     public sealed class InjectPropertyInfo {
-        public readonly PropertyInfo PropertyInfo;
-        public readonly object Id;
+        readonly PropertyInfo propertyInfo;
+        readonly object id;
+
+        public string Name => propertyInfo.Name;
+        public Type PropertyType => propertyInfo.PropertyType;
+        public object Id => id;
 
         public InjectPropertyInfo(PropertyInfo propertyInfo, object id) {
-            PropertyInfo = propertyInfo;
-            Id = id;
+            this.propertyInfo = propertyInfo;
+            this.id = id;
+        }
+
+        public void SetValue(object obj, object value) {
+            propertyInfo.SetValue(obj, value);
         }
     }
 }

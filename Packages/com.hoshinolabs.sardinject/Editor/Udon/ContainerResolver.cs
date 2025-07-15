@@ -15,7 +15,7 @@ namespace HoshinoLabs.Sardinject.Udon {
         GameObject rootGo;
 
         List<ResolverData> resolverDatas = new();
-        List<InjectTypeInfo> typeInfos = new();
+        List<TypeLayout> typeInfos = new();
 
         public ContainerResolver(ComponentDestination destination) {
             Destination = destination;
@@ -154,10 +154,10 @@ namespace HoshinoLabs.Sardinject.Udon {
             return new ComponentDestinationData(transform);
         }
 
-        int AddOrBuildInjectTypeInfo(Sardinject.InjectTypeInfo typeInfo) {
+        int AddOrBuildInjectTypeInfo(Sardinject.TypeLayout typeInfo) {
             var idx = typeInfos.FindIndex(x => x.Type == typeInfo.Type);
             if (idx < 0) {
-                var info = InjectTypeInfoCache.GetOrBuild(typeInfo);
+                var info = TypeLayoutCache.GetOrBuild(typeInfo.Type);
                 typeInfos.Add(info);
                 idx = typeInfos.Count() - 1;
             }
@@ -368,17 +368,17 @@ namespace HoshinoLabs.Sardinject.Udon {
         (string[] _0, string[][] _1, string[][] _2, object[][] _3, string[][] _4, string[][] _5, object[][] _6, string[][] _7, string[][] _8, string[][] _9, string[][][] _10, string[][][] _11, object[][][] _12, string[][] _13, string[][][] _14) BuildTypeInfoData() {
             return (
                 _0: typeInfos.Select(x => x.Type.FullName).ToArray(),
-                _1: typeInfos.Select(x => x.Fields.Select(x => x.FieldInfo.Name).ToArray()).ToArray(),
-                _2: typeInfos.Select(x => x.Fields.Select(x => x.FieldInfo.FieldType.FullName).ToArray()).ToArray(),
+                _1: typeInfos.Select(x => x.Fields.Select(x => x.Name).ToArray()).ToArray(),
+                _2: typeInfos.Select(x => x.Fields.Select(x => x.FieldType.FullName).ToArray()).ToArray(),
                 _3: typeInfos.Select(x => x.Fields.Select(x => x.Id).ToArray()).ToArray(),
-                _4: typeInfos.Select(x => x.Properties.Select(x => x.PropertyInfo.Name).ToArray()).ToArray(),
-                _5: typeInfos.Select(x => x.Properties.Select(x => x.PropertyInfo.PropertyType.FullName).ToArray()).ToArray(),
-                _6: typeInfos.Select(x => x.Properties.Select(x => x.Id).ToArray()).ToArray(),
-                _7: typeInfos.Select(x => x.Properties.Select(x => x.Method.Symbol).ToArray()).ToArray(),
-                _8: typeInfos.Select(x => x.Properties.Select(x => x.Method.Parameters.First().Symbol).ToArray()).ToArray(),
-                _9: typeInfos.Select(x => x.Methods.Select(x => x.MethodInfo.Name).ToArray()).ToArray(),
-                _10: typeInfos.Select(x => x.Methods.Select(x => x.Parameters.Select(x => x.ParameterInfo.Name).ToArray()).ToArray()).ToArray(),
-                _11: typeInfos.Select(x => x.Methods.Select(x => x.Parameters.Select(x => x.ParameterInfo.ParameterType.FullName).ToArray()).ToArray()).ToArray(),
+                _4: typeInfos.Select(x => x.Properties.Where(x => x.CanWrite).Select(x => x.Name).ToArray()).ToArray(),
+                _5: typeInfos.Select(x => x.Properties.Where(x => x.CanWrite).Select(x => x.PropertyType.FullName).ToArray()).ToArray(),
+                _6: typeInfos.Select(x => x.Properties.Where(x => x.CanWrite).Select(x => x.Id).ToArray()).ToArray(),
+                _7: typeInfos.Select(x => x.Properties.Where(x => x.CanWrite).Select(x => x.Setter.Symbol).ToArray()).ToArray(),
+                _8: typeInfos.Select(x => x.Properties.Where(x => x.CanWrite).Select(x => x.Setter.Parameters.First().Symbol).ToArray()).ToArray(),
+                _9: typeInfos.Select(x => x.Methods.Select(x => x.Name).ToArray()).ToArray(),
+                _10: typeInfos.Select(x => x.Methods.Select(x => x.Parameters.Select(x => x.Name).ToArray()).ToArray()).ToArray(),
+                _11: typeInfos.Select(x => x.Methods.Select(x => x.Parameters.Select(x => x.ParameterType.FullName).ToArray()).ToArray()).ToArray(),
                 _12: typeInfos.Select(x => x.Methods.Select(x => x.Parameters.Select(x => x.Id).ToArray()).ToArray()).ToArray(),
                 _13: typeInfos.Select(x => x.Methods.Select(x => x.Symbol).ToArray()).ToArray(),
                 _14: typeInfos.Select(x => x.Methods.Select(x => x.Parameters.Select(x => x.Symbol).ToArray()).ToArray()).ToArray()
