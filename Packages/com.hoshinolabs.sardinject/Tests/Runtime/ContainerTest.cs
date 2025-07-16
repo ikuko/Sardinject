@@ -7,12 +7,6 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
-#if !VRC_CLIENT && UNITY_EDITOR && VRC_SDK_VRCSDK3
-using VRC.Core;
-#if VRC_SDK_WORLDS3_7_4_OR_NEWER && !VRC_SDK_WORLDS3_8_2_OR_NEWER
-using VRC.SDKBase;
-#endif
-#endif
 
 namespace HoshinoLabs.Sardinject.Tests {
     [TestFixture]
@@ -20,7 +14,7 @@ namespace HoshinoLabs.Sardinject.Tests {
 #if !VRC_CLIENT && UNITY_EDITOR && VRC_SDK_VRCSDK3
         IDictionary InitialTargetAccessFilters {
             get {
-                var initialTargetAccessFiltersField = typeof(UnityEventFilter)
+                var initialTargetAccessFiltersField = typeof(VRC.Core.UnityEventFilter)
                     .GetField("_initialTargetAccessFilters", BindingFlags.Static | BindingFlags.NonPublic);
                 return (IDictionary)initialTargetAccessFiltersField.GetValue(null);
             }
@@ -38,7 +32,7 @@ namespace HoshinoLabs.Sardinject.Tests {
 
         public void Setup() {
 #if !VRC_CLIENT && UNITY_EDITOR && VRC_SDK_VRCSDK3
-            var allowedMethodFilterType = typeof(UnityEventFilter).Assembly.GetTypes()
+            var allowedMethodFilterType = typeof(VRC.Core.UnityEventFilter).Assembly.GetTypes()
                 .Where(x => x.FullName == "VRC.Core.UnityEventFilter+AllowedMethodFilter")
                 .First();
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
@@ -61,11 +55,11 @@ namespace HoshinoLabs.Sardinject.Tests {
             }
 
 #if VRC_SDK_WORLDS3_7_4_OR_NEWER && !VRC_SDK_WORLDS3_8_2_OR_NEWER
-            if (VRC_SceneDescriptor.Instance == null) {
-                var gameObjectName = typeof(VRC_SceneDescriptor).Name;
-                var go = new GameObject(typeof(VRC_SceneDescriptor).Name);
-                var component = go.AddComponent<VRC.SDK3.Components.VRCSceneDescriptor>();
-                component.spawns = new[] { go.transform };
+            if (VRC.SDKBase.VRC_SceneDescriptor.Instance == null) {
+                var gameObjectName = typeof(VRC.SDKBase.VRC_SceneDescriptor).Name;
+                var gameObject = new GameObject(typeof(VRC.SDKBase.VRC_SceneDescriptor).Name);
+                var component = gameObject.AddComponent<VRC.SDK3.Components.VRCSceneDescriptor>();
+                component.spawns = new[] { gameObject.transform };
             }
 #endif
 #endif
@@ -73,7 +67,7 @@ namespace HoshinoLabs.Sardinject.Tests {
 
         public void Cleanup() {
 #if !VRC_CLIENT && UNITY_EDITOR && VRC_SDK_VRCSDK3
-            var allowedMethodFilterType = typeof(UnityEventFilter).Assembly.GetTypes()
+            var allowedMethodFilterType = typeof(VRC.Core.UnityEventFilter).Assembly.GetTypes()
                 .Where(x => x.FullName == "VRC.Core.UnityEventFilter+AllowedMethodFilter")
                 .First();
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {

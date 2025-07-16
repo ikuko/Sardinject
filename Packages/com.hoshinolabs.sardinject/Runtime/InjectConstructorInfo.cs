@@ -5,7 +5,6 @@ namespace HoshinoLabs.Sardinject {
         readonly ConstructorInfo constructorInfo;
         readonly InjectParameterInfo[] parameters;
 
-        public ConstructorInfo ConstructorInfo => constructorInfo;
         public InjectParameterInfo[] Parameters => parameters;
 
         public InjectConstructorInfo(ConstructorInfo constructorInfo, InjectParameterInfo[] parameters) {
