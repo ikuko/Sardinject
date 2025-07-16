@@ -53,6 +53,7 @@ jobs:
 
       # Test the Unity Project using the Unity Test Runner Action
       - name: Test Unity Project
+        id: tests
         uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
