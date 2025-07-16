@@ -31,8 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       checks: write
-    env:
-      packagePath: Packages/${{ vars.PACKAGE_NAME }}
     if: needs.config.outputs.config_package == 'true'
     steps:
 
@@ -61,15 +59,27 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          customParameters: -testFilter "HoshinoLabs.*"
+          customParameters: -testFilter "HoshinoLabs.*" -logFile -
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          coverageOptions: "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
+          coverageOptions: generateAdditionalMetrics;generateHtmlReport;generateBadgeReport
+
+      # Upload the Test results as artifacts
+      - name: Test results
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ steps.tests.outputs.artifactsPath }}
+
+      # Upload the Coverage results as an artifact
+      - name: Coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ steps.tests.outputs.coveragePath }}
 
   # Build and release the Package
   # If the repository is not configured properly, this job will be skipped
   build:
-    needs: config
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: write
