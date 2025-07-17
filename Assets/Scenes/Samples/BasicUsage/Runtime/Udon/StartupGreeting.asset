@@ -19,9 +19,9 @@ MonoBehaviour:
   sourceCsScript: {fileID: 11500000, guid: 5d6189c8fee478c4f972164e9fdb09a2, type: 3}
   scriptVersion: 2
   compiledVersion: 2
-  behaviourSyncMode: 0
+  behaviourSyncMode: 1
   hasInteractEvent: 0
-  scriptID: 7913581893845570017
+  scriptID: 7501688588582541112
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -62,7 +62,7 @@ MonoBehaviour:
       Data: 3|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Samples.BasicUsage.Sardine, Assembly-CSharp
+      Data: Samples.BasicUsage.Udon.Sardine, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
