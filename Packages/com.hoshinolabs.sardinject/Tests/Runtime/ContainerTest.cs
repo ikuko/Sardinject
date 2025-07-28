@@ -89,11 +89,6 @@ namespace HoshinoLabs.Sardinject.Tests {
 
         }
 
-        class SimpleComponentWithValue : MonoBehaviour, ISimpleComponent {
-            [Inject]
-            public readonly int Value;
-        }
-
         // 型で解決,インスタンスで登録,常に同じ値が返るはず
         [Test]
         public void Resolve_RegisterByInstance_ShouldReturnAlwaysSameInstance() {
@@ -117,6 +112,11 @@ namespace HoshinoLabs.Sardinject.Tests {
             var simple1 = container.Resolve<SimpleComponent>();
             var simple2 = container.Resolve<SimpleComponent>();
             Assert.AreNotEqual(simple1, simple2);
+        }
+
+        class SimpleComponentWithValue : MonoBehaviour, ISimpleComponent {
+            [Inject]
+            public readonly int Value;
         }
 
         // 型で解決,名前指定で値を指定,指定された値が設定されるはず

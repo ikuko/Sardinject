@@ -11,7 +11,7 @@ namespace HoshinoLabs.Sardinject.Udon {
         }
 
         internal static string GetSymbol(this ParameterInfo self, Dictionary<object, int> lookupId) {
-            return $"__{lookupId[self]}_{self.Name}";
+            return $"__{lookupId[self]}_{self.Name}__param";
         }
 
         public static string GetUdonExportSymbol(this ParameterInfo self, Type declaringType) {
