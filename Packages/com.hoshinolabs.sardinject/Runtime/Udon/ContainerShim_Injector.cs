@@ -49,7 +49,7 @@ namespace HoshinoLabs.Sardinject.Udon {
             }
 #endif
             var value = udon.GetProgramVariable(CompilerConstants.UsbTypeNameHeapKey);
-            if(value == null) {
+            if (value == null) {
                 return;
             }
 

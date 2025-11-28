@@ -7,6 +7,10 @@ namespace HoshinoLabs.Sardinject {
             configuration(new EntryPointsBuilder(self));
         }
 
+        public static void UseEntryPoints(this ContainerBuilder self, Transform transform, Action<EntryPointsBuilder> configuration) {
+            configuration(new EntryPointsBuilder(self, transform));
+        }
+
         public static void UseComponents(this ContainerBuilder self, Action<ComponentsBuilder> configuration) {
             configuration(new ComponentsBuilder(self));
         }
@@ -15,17 +19,26 @@ namespace HoshinoLabs.Sardinject {
             configuration(new ComponentsBuilder(self, transform));
         }
 
+        public static ComponentBindingBuilder RegisterEntryPoint(this ContainerBuilder self, Type type, Lifetime lifetime) {
+            return self.RegisterComponent(type, lifetime)
+                .EnsureBindingResolved(type, self);
+        }
+
         public static ComponentBindingBuilder RegisterEntryPoint<T>(this ContainerBuilder self, Lifetime lifetime) where T : Component {
             return self.RegisterComponent<T>(lifetime)
                 .EnsureBindingResolved<T>(self);
         }
 
-        public static ComponentBindingBuilder RegisterComponent<T>(this ContainerBuilder self, Lifetime lifetime) where T : Component {
+        public static ComponentBindingBuilder RegisterComponent(this ContainerBuilder self, Type type, Lifetime lifetime) {
             var destination = new ComponentDestination();
-            var resolverBuilder = new ComponentResolverBuilder(typeof(T), destination).OverrideScopeIfNeeded(self, lifetime);
-            var builder = new ComponentBindingBuilder(typeof(T), resolverBuilder, destination);
+            var resolverBuilder = new ComponentResolverBuilder(type, destination).OverrideScopeIfNeeded(self, lifetime);
+            var builder = new ComponentBindingBuilder(type, resolverBuilder, destination);
             self.Register(builder);
             return builder;
+        }
+
+        public static ComponentBindingBuilder RegisterComponent<T>(this ContainerBuilder self, Lifetime lifetime) where T : Component {
+            return self.RegisterComponent(typeof(T), lifetime);
         }
 
         public static ComponentBindingBuilder RegisterComponentInstance<T>(this ContainerBuilder self, T component) {
@@ -47,12 +60,7 @@ namespace HoshinoLabs.Sardinject {
         }
 
         public static ComponentBindingBuilder RegisterComponentInHierarchy<T>(this ContainerBuilder self) where T : Component {
-            var destination = new ComponentDestination();
-            var resolverBuilder = new FindComponentResolverBuilder(typeof(T), destination).OverrideScopeIfNeeded(self, Lifetime.Cached);
-            var builder = new ComponentBindingBuilder(typeof(T), resolverBuilder, destination)
-                .EnsureBindingResolved<T>(self);
-            self.Register(builder);
-            return builder;
+            return self.RegisterComponentInHierarchy(typeof(T));
         }
 
         public static ComponentBindingBuilder RegisterComponentInNewPrefab(this ContainerBuilder self, Type type, Lifetime lifetime, GameObject prefab) {
@@ -64,11 +72,7 @@ namespace HoshinoLabs.Sardinject {
         }
 
         public static ComponentBindingBuilder RegisterComponentInNewPrefab<T>(this ContainerBuilder self, Lifetime lifetime, GameObject prefab) where T : Component {
-            var destination = new ComponentDestination();
-            var resolverBuilder = new NewPrefabComponentResolverBuilder(typeof(T), prefab, destination).OverrideScopeIfNeeded(self, lifetime);
-            var builder = new ComponentBindingBuilder(typeof(T), resolverBuilder, destination);
-            self.Register(builder);
-            return builder;
+            return self.RegisterComponentInNewPrefab(typeof(T), lifetime, prefab);
         }
 
         public static ComponentBindingBuilder RegisterComponentOnNewGameObject(this ContainerBuilder self, Type type, Lifetime lifetime, string gameObjectName = null) {
@@ -80,11 +84,7 @@ namespace HoshinoLabs.Sardinject {
         }
 
         public static ComponentBindingBuilder RegisterComponentOnNewGameObject<T>(this ContainerBuilder self, Lifetime lifetime, string gameObjectName = null) where T : Component {
-            var destination = new ComponentDestination();
-            var resolverBuilder = new NewGameObjectComponentResolverBuilder(typeof(T), gameObjectName, destination).OverrideScopeIfNeeded(self, lifetime);
-            var builder = new ComponentBindingBuilder(typeof(T), resolverBuilder, destination);
-            self.Register(builder);
-            return builder;
+            return self.RegisterComponentOnNewGameObject(typeof(T), lifetime, gameObjectName);
         }
     }
 }

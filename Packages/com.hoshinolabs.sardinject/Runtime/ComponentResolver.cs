@@ -20,7 +20,10 @@ namespace HoshinoLabs.Sardinject {
             var transform = Destination.Transform?.Resolve<Transform>(container);
             var go = transform?.gameObject
                 ?? new GameObject(ComponentType.Name);
-            go.SetActive(false);
+            var active = go.activeSelf;
+            if (active) {
+                go.SetActive(false);
+            }
 #if UDONSHARP
             var component = typeof(UdonSharp.UdonSharpBehaviour).IsAssignableFrom(ComponentType)
                 ? go.AddUdonSharpComponent(ComponentType, false)
@@ -30,7 +33,9 @@ namespace HoshinoLabs.Sardinject {
 #endif
             Injector.Inject(component, container, Parameters);
             Destination.ApplyDontDestroyOnLoadIfNeeded(component);
-            go.SetActive(true);
+            if (active) {
+                go.SetActive(active);
+            }
             return component;
         }
     }
