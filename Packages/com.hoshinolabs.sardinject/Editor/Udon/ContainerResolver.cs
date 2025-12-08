@@ -6,6 +6,7 @@ using UdonSharp;
 using UdonSharpEditor;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VRC.SDK3.Data;
 
 namespace HoshinoLabs.Sardinject.Udon {
@@ -19,6 +20,17 @@ namespace HoshinoLabs.Sardinject.Udon {
 
         public ContainerResolver(ComponentDestination destination) {
             Destination = destination;
+
+            SceneInjector.OnSceneLoaded -= SceneLoaded;
+            SceneInjector.OnSceneLoaded += SceneLoaded;
+        }
+
+        private void SceneLoaded(Scene scene) {
+            var usharps = scene.GetRootGameObjects()
+                .SelectMany(x => x.GetComponentsInChildren<UdonSharpBehaviour>(true));
+            foreach (var usharp in usharps) {
+                UdonSharpEditorUtility.CopyProxyToUdon(usharp, ProxySerializationPolicy.All);
+            }
         }
 
         public object Resolve(Type type, Sardinject.Container container) {
