@@ -27,7 +27,8 @@ namespace HoshinoLabs.Sardinject.Udon {
 
         private void SceneLoaded(Scene scene) {
             var usharps = scene.GetRootGameObjects()
-                .SelectMany(x => x.GetComponentsInChildren<UdonSharpBehaviour>(true));
+                .SelectMany(x => x.GetComponentsInChildren<UdonSharpBehaviour>(true))
+                .Where(x => UdonSharpEditorUtility.IsProxyBehaviour(x));
             foreach (var usharp in usharps) {
                 UdonSharpEditorUtility.CopyProxyToUdon(usharp, ProxySerializationPolicy.All);
             }
